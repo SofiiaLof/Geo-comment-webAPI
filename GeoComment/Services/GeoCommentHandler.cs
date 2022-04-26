@@ -1,6 +1,7 @@
 ﻿using GeoComment.Data;
 using GeoComment.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace GeoComment.Services
 {
@@ -34,6 +35,12 @@ namespace GeoComment.Services
             await _ctx.Comments.AddAsync(comment);
             await _ctx.SaveChangesAsync();
 
+            return comment;
+        }
+
+        public async Task<Comment> GetComment(int id)
+        {
+            var comment = await _ctx.Comments.Where(c => c.Id == id).Include(u=>u.User).FirstOrDefaultAsync();
             return comment;
         }
     }
