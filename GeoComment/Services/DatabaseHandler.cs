@@ -12,11 +12,27 @@ namespace GeoComment.Services
             _ctx = ctx;
         }
 
-        public async Task CreateDatabse()
+        public async Task CreateDatabase()
         {
             await  _ctx.Database.EnsureCreatedAsync();
         }
 
+        public async Task<bool> ResetDatabase()
+        {  
+            await _ctx.Database.EnsureDeletedAsync();
+
+
+           bool databaseCreated = await _ctx.Database.EnsureCreatedAsync();
+
+           if (databaseCreated)
+           {
+              await Seed();
+                return true;
+             
+           }
+
+           return false;
+        }
         public async Task Seed()
         {
             var users = new List<User>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<DatabaseHandler>();
+builder.Services.AddScoped<GeoCommentHandler>();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -26,8 +27,8 @@ using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
 
-    await database.CreateDatabse();
-    await database.Seed();
+   // await database.CreateDatabase();
+    //await database.Seed();
 }
 
 app.UseHttpsRedirection();
