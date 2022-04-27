@@ -56,8 +56,10 @@ namespace GeoComment.Controllers
                
             }
 
-            return BadRequest();
+            return NotFound();
         }
+
+       
     }
 
     public class CommentDTO
