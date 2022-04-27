@@ -1,4 +1,7 @@
-﻿using GeoComment.Services;
+﻿
+using System.ComponentModel.DataAnnotations;
+using GeoComment.Models;
+using GeoComment.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +23,18 @@ namespace GeoComment.Controllers
         {
             
            var postComment = await _geoCommentHandler.PostComment(comment.Author,comment.Message, comment.Longitude, comment.Latitude);
+          
+               return Created("", new CommentDTO
+               {
+                   Id = postComment.Id,
+                   Message = postComment.Message,
+                   Author = postComment.User.First_name,
+                   Longitude = postComment.maxLon,
+                   Latitude = postComment.maxLat
 
+               });
            
-                return Created("",new CommentDTO
-                {
-                    Id = postComment.Id,
-                    Message = postComment.Message,
-                    Author = postComment.User.First_name,
-                    Longitude = postComment.maxLon,
-                    Latitude = postComment.maxLat
 
-                });
-            
 
         }
 
@@ -59,9 +62,42 @@ namespace GeoComment.Controllers
             return NotFound();
         }
 
-       
-    }
+        [HttpGet]
+        
+        public async Task<ActionResult<Comment[]>> GetCommentsInRange([Required]int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
+        {
+            var comments = await _geoCommentHandler.GetCommentsInRange(minLon, maxLon, minLat, maxLat);
 
+            var commentArray = new DtoArray();
+
+            commentArray.commentsArray = new List<CommentDTO>();
+
+            if (comments != null)
+            {
+                foreach (var comment in comments)
+                {
+                    var commentDto = new CommentDTO()
+                    {
+                        Id = comment.Id,
+                        Author = comment.User.First_name,
+                        Message = comment.Message,
+                        Latitude = comment.maxLat,
+                        Longitude = comment.maxLon,
+                    };
+
+                  
+                    commentArray.commentsArray.Add(commentDto);
+                }
+          
+                return Ok(commentArray.commentsArray);
+            }
+
+
+            return BadRequest();
+
+        }
+    }
+   
     public class CommentDTO
     {
         public int Id { get; set; }
@@ -69,6 +105,11 @@ namespace GeoComment.Controllers
         public string Author { get; set; }
         public int Latitude { get; set; }
         public int Longitude { get; set; }
+        
     }
 
+    public class DtoArray
+    {
+        public List<CommentDTO> commentsArray  {get;set;}
+    }
 }

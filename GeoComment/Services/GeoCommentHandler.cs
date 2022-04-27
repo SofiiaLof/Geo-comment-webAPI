@@ -43,5 +43,14 @@ namespace GeoComment.Services
             var comment = await _ctx.Comments.Where(c => c.Id == id).Include(u=>u.User).FirstOrDefaultAsync();
             return comment;
         }
+
+        public async Task<List<Comment>> GetCommentsInRange(int minLon, int maxLon, int minLat, int maxLat)
+        {
+            var commentsInRange = await _ctx.Comments
+                .Where(c => c.minLon <= minLon && c.maxLon<=maxLon && c.minLat<= minLat && c.maxLat<= maxLat)
+                .Include(u => u.User).ToListAsync();
+
+            return commentsInRange;
+        }
     }
 }
