@@ -23,13 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var database = scope.ServiceProvider.GetRequiredService<DatabaseHandler>();
 
-   // await database.CreateDatabase();
-    //await database.Seed();
-}
 
 app.UseHttpsRedirection();
 

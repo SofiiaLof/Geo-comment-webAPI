@@ -18,8 +18,8 @@ namespace GeoComment.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> PostComment(CommentDTO comment)
+       
+        public async Task<ActionResult<CommentDTO>> PostComment(CommentDtoInput comment)
         {
             
            var postComment = await _geoCommentHandler.PostComment(comment.Author,comment.Message, comment.Longitude, comment.Latitude);
@@ -64,7 +64,7 @@ namespace GeoComment.Controllers
 
         [HttpGet]
         
-        public async Task<ActionResult<Comment[]>> GetCommentsInRange([Required]int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
+        public async Task<ActionResult<DtoArray>> GetCommentsInRange([Required]int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
         {
             var comments = await _geoCommentHandler.GetCommentsInRange(minLon, maxLon, minLat, maxLat);
 
@@ -97,7 +97,7 @@ namespace GeoComment.Controllers
 
         }
     }
-   
+
     public class CommentDTO
     {
         public int Id { get; set; }
@@ -108,6 +108,14 @@ namespace GeoComment.Controllers
         
     }
 
+    public class CommentDtoInput
+    {
+        public string Message { get; set; }
+        public string Author { get; set; }
+        public int Latitude { get; set; }
+        public int Longitude { get; set; }
+
+    }
     public class DtoArray
     {
         public List<CommentDTO> commentsArray  {get;set;}

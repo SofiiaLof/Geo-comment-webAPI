@@ -25,8 +25,6 @@ namespace GeoComment.Services
             {
                 Message = message,
                 User = user,
-                minLat = 0,
-                minLon = 0,
                 maxLat = latitude,
                 maxLon = longitude,
 

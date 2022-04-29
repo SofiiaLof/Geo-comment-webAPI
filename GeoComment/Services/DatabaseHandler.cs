@@ -12,11 +12,6 @@ namespace GeoComment.Services
             _ctx = ctx;
         }
 
-        public async Task CreateDatabase()
-        {
-            await  _ctx.Database.EnsureCreatedAsync();
-        }
-
         public async Task<bool> ResetDatabase()
         {  
             await _ctx.Database.EnsureDeletedAsync();
