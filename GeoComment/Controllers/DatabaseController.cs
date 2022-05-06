@@ -15,6 +15,9 @@ namespace GeoComment.Controllers
             _databaseHandler = databaseHandler;
         }
 
+
+        [ApiVersion("0.1")]
+        [ApiVersion("0.2")]
         [HttpGet]
         [Route("reset-db")]
         [ProducesResponseType(StatusCodes.Status200OK)]

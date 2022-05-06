@@ -30,14 +30,7 @@ namespace GeoComment.Services
         }
         public async Task Seed()
         {
-            var users = new List<User>
-            {
-                new(){First_name = "Ada"},
-                new(){First_name = "Bill"}
-            };
-
-            await _ctx.AddRangeAsync(users);
-            await _ctx.SaveChangesAsync();
+            
         }
     }
 }

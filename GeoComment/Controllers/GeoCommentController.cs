@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GeoComment.Controllers
 {
+    
     [Route("api/geo-comments")]
     [ApiController]
     public class GeoCommentController : ControllerBase
@@ -17,8 +18,10 @@ namespace GeoComment.Controllers
             _geoCommentHandler = geoCommentHandler;
         }
 
-        [HttpPost]
        
+        [HttpPost]
+        [ApiVersion("0.1")]
+        [ApiVersion("0.2")]
         public async Task<ActionResult<CommentDTO>> PostComment(CommentDtoInput comment)
         {
             
@@ -40,6 +43,8 @@ namespace GeoComment.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [ApiVersion("0.1")]
+        [ApiVersion("0.2")]
         public async Task<ActionResult<CommentDTO>> GetComment(int id)
         {
             var comment = await _geoCommentHandler.GetComment(id);
@@ -62,8 +67,10 @@ namespace GeoComment.Controllers
             return NotFound();
         }
 
+  
         [HttpGet]
-        
+        [ApiVersion("0.1")]
+        [ApiVersion("0.2")]
         public async Task<ActionResult<DtoArray>> GetCommentsInRange([Required]int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
         {
             var comments = await _geoCommentHandler.GetCommentsInRange(minLon, maxLon, minLat, maxLat);
