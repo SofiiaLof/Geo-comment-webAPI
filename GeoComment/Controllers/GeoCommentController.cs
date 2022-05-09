@@ -36,7 +36,7 @@ namespace GeoComment.Controllers
                {
                    Id = postComment.Id,
                    Message = postComment.Message,
-                   Author =comment.Author,
+                   Author = comment.Author,
                    Longitude = postComment.maxLon,
                    Latitude = postComment.maxLat
 

@@ -24,7 +24,10 @@ namespace GeoComment.Services
         public async Task<Comment> PostComment(string name,string message, int longitude, int latitude)
         {
 
-            var user = await _userManager.Users.Where(u=>u.First_name == name).FirstOrDefaultAsync();
+           var user = new User
+           {
+               First_name = name,
+           };
             
             var comment = new Comment
             {

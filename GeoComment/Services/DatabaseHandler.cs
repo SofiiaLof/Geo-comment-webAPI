@@ -25,7 +25,7 @@ namespace GeoComment.Services
 
            if (databaseCreated)
            {
-               await Seed();
+              // await Seed();
                
                 return true;
              
