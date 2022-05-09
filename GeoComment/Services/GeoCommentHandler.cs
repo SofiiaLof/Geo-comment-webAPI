@@ -1,5 +1,7 @@
-﻿using GeoComment.Data;
+﻿using GeoComment.Controllers;
+using GeoComment.Data;
 using GeoComment.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -9,18 +11,21 @@ namespace GeoComment.Services
     {
 
         private readonly GeoCommentDbContext _ctx;
+        private readonly UserManager<User> _userManager;
 
-        public GeoCommentHandler(GeoCommentDbContext ctx)
+        public GeoCommentHandler(GeoCommentDbContext ctx, UserManager<User> userManager)
         {
             _ctx = ctx;
+            _userManager = userManager;
         }
 
       
 
         public async Task<Comment> PostComment(string name,string message, int longitude, int latitude)
         {
-            var user = await _ctx.Users.Where(u => u.First_name == name).FirstOrDefaultAsync();
 
+            var user = await _userManager.Users.Where(u=>u.First_name == name).FirstOrDefaultAsync();
+            
             var comment = new Comment
             {
                 Message = message,
@@ -30,8 +35,8 @@ namespace GeoComment.Services
 
             };
 
-            await _ctx.Comments.AddAsync(comment);
-            await _ctx.SaveChangesAsync();
+           _ctx.Comments.Add(comment);
+           await _ctx.SaveChangesAsync();
 
             return comment;
         }
@@ -49,6 +54,24 @@ namespace GeoComment.Services
                 .Include(u => u.User).ToListAsync();
 
             return commentsInRange;
+        }
+
+        public async Task<Comment> PostCommentV_2(string title, string message, int longitude, int latitude, User user)
+        {
+
+            var comment = new Comment
+            {
+                Message = message,
+                Title = title,
+                User = user,
+                maxLon = longitude,
+                maxLat = latitude
+            };
+
+            _ctx.Comments.Add(comment);
+            await _ctx.SaveChangesAsync();
+
+            return comment;
         }
     }
 }
