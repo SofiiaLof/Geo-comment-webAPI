@@ -49,7 +49,7 @@ namespace GeoComment.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [ApiVersion("0.1")]
-        [ApiVersion("0.2")]
+      
         public async Task<ActionResult<CommentDTO>> GetComment(int id)
         {
             var comment = await _geoCommentHandler.GetComment(id);
@@ -75,7 +75,7 @@ namespace GeoComment.Controllers
   
         [HttpGet]
         [ApiVersion("0.1")]
-        [ApiVersion("0.2")]
+      
         public async Task<ActionResult<DtoArray>> GetCommentsInRange([Required]int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
         {
             var comments = await _geoCommentHandler.GetCommentsInRange(minLon, maxLon, minLat, maxLat);
@@ -140,6 +140,114 @@ namespace GeoComment.Controllers
         }
 
 
+        [HttpGet]
+        [Route("{id:int}")]
+        [ApiVersion("0.2")]
+        public async Task<ActionResult<CommentDtoOutputV_2>> GetCommentV_2(int id)
+        {
+            var comment = await _geoCommentHandler.GetComment(id);
+
+            if (comment != null)
+            {
+                var commentDto = new CommentDtoOutputV_2
+                {
+                    Id = comment.Id,
+                    body = new BodyOutput
+                    {
+                        Author = comment.User.First_name,
+                        Title = comment.Title,
+                        Message = comment.Message,
+                    },
+                       
+                    Latitude = comment.maxLat,
+                    Longitude = comment.maxLon
+
+                };
+
+                return Ok(commentDto);
+
+            }
+
+            return NotFound();
+        }
+
+
+        [HttpGet]
+        [Route("{username}")]
+        [ApiVersion("0.2")]
+
+        public async Task<ActionResult<List<CommentDtoOutputV_2>>> GetCommentsByUsername(string username)
+        {
+            var comments = await _geoCommentHandler.GetCommentsFoUser(username);
+
+            var commentsList = new List<CommentDtoOutputV_2>();
+
+            if (comments != null)
+            {
+                foreach (var comment in comments)
+                {
+                    var commentV_2 = new CommentDtoOutputV_2
+                    {
+                        Id = comment.Id,
+                        body =new BodyOutput
+                        {
+                            Title = comment.Title,
+                        },
+                        
+                        Latitude = comment.maxLat,
+                        Longitude = comment.maxLon,
+                    };
+
+                   
+                    commentsList.Add(commentV_2);
+
+                    
+                }
+                return Ok(commentsList);
+            }
+            return NotFound ();
+
+        }
+
+        [HttpGet]
+        [ApiVersion("0.2")]
+
+        public async Task<ActionResult<CommentDtoOutputV_2>> GetCommentsInRangeV_2([Required] int minLon, [Required] int maxLon, [Required] int minLat, [Required] int maxLat)
+        {
+            var comments = await _geoCommentHandler.GetCommentsInRange(minLon, maxLon, minLat, maxLat);
+
+            var commentsList = new List<CommentDtoOutputV_2>();
+
+            if (comments != null)
+            {
+                foreach (var comment in comments)
+                {
+                    var commentsInRange = new CommentDtoOutputV_2
+                    {
+                        Id = comment.Id,
+                        body =new BodyOutput
+                        {
+                            Author = comment.User.First_name,
+                            Message = comment.Message,
+                            Title = comment.Title
+                        },
+                       
+                     
+                        Latitude = comment.maxLat,
+                        Longitude = comment.maxLon,
+                    };
+
+
+                    commentsList.Add(commentsInRange);
+                }
+
+                return Ok(commentsList);
+            }
+
+
+            return BadRequest();
+
+        }
     }
 
   
@@ -199,5 +307,6 @@ namespace GeoComment.Controllers
     public class DtoArray
     {
         public List<CommentDTO> commentsArray  {get;set;}
+        
     }
 }

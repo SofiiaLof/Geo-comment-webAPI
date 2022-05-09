@@ -73,5 +73,19 @@ namespace GeoComment.Services
 
             return comment;
         }
+
+        public async Task<List<Comment>> GetCommentsFoUser(string username)
+        {
+            var user = await _userManager.Users.Where(u=>u.UserName == username).Include(c=>c.Comments).FirstOrDefaultAsync();
+           
+
+            if (user != null)
+            {
+                var comments = user.Comments.ToList();
+                return comments;
+            }
+
+            return null;
+        }
     }
 }
