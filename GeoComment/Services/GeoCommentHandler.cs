@@ -92,5 +92,19 @@ namespace GeoComment.Services
 
             return null;
         }
+
+        public async Task<Comment> DeleteComment(int id)
+        {
+            var commentToDelete = await _ctx.Comments.Where(c => c.Id == id).Include(u=>u.User).FirstOrDefaultAsync();
+
+            if (commentToDelete != null)
+            {
+                _ctx.Comments.Remove(commentToDelete);
+                await _ctx.SaveChangesAsync();
+                return commentToDelete;
+            }
+
+            return null;
+        }
     }
 }

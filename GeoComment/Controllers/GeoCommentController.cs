@@ -248,6 +248,52 @@ namespace GeoComment.Controllers
             return BadRequest();
 
         }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("{id:int}")]
+        [ApiVersion("0.2")]
+
+        public async Task<ActionResult<CommentDtoOutputV_2>> DeleteComment(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var commentToDelete = await _geoCommentHandler.GetComment(id);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            if (commentToDelete == null)
+            {
+                return NotFound();
+            }
+
+            var deletedComment = await _geoCommentHandler.DeleteComment(id);
+
+            if (deletedComment != null)
+            {
+                if(deletedComment.User.Id !=user.Id)
+                {
+                    return Unauthorized();
+                }
+                return Ok(new CommentDtoOutputV_2
+                {
+                    Id = deletedComment.Id,
+                    body = new BodyOutput(){
+                        Author =deletedComment.User.UserName,
+                        Title = deletedComment.Title,
+                        Message = deletedComment.Message,
+                    },
+                    Latitude = deletedComment.maxLat,
+                    Longitude = deletedComment.maxLon
+
+                });
+            }
+
+            return BadRequest();
+        }
     }
 
   
