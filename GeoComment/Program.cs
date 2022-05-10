@@ -1,16 +1,20 @@
+using System.Text;
 using GeoComment.Data;
 using GeoComment.Models;
 using GeoComment.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<DatabaseHandler>();
-
+builder.Services.AddScoped<JwtPrinter>();
 builder.Services.AddScoped<GeoCommentHandler>();
 // Add services to the container.
 
@@ -25,8 +29,24 @@ builder.Services.AddDbContext<GeoCommentDbContext>(options => options.UseSqlServ
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<GeoCommentDbContext>();
 
-builder.Services.AddAuthentication("BasicAuthentication")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var key = Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"]);
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            ValidateIssuerSigningKey = true,
+
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+    });
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -43,6 +63,16 @@ builder.Services.AddVersionedApiExplorer(options =>
 
 builder.Services.AddSwaggerGen(options =>
 {
+   options.AddSecurityDefinition("BearerToken", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+    });
+
     options.SwaggerDoc("api-version0.1", new OpenApiInfo()
     {
         Title = "Geo Comments API",
@@ -53,6 +83,11 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Geo Comments API",
         Version ="0.2"
     });
+
+   
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+   
+
 });
 
 

@@ -28,11 +28,13 @@ namespace GeoComment.Services
            {
                First_name = name,
            };
-            
+           var title = message.Split(" ")[0];
+
             var comment = new Comment
             {
                 Message = message,
                 User = user,
+                Title = title,
                 maxLat = latitude,
                 maxLon = longitude,
 
