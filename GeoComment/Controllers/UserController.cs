@@ -16,14 +16,12 @@ namespace GeoComment.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly GeoCommentDbContext _ctx;
-        private readonly JwtPrinter _jwtPrinter;
-        public UserController(UserManager<User> userManager, GeoCommentDbContext ctx, JwtPrinter jwtPrinter)
+       
+        private readonly UserHandler _userHandler;
+        public UserController(UserHandler userHandler)
         {
-            _userManager = userManager;
-            _ctx = ctx;
-            _jwtPrinter = jwtPrinter;
+          
+            _userHandler = userHandler;
         }
 
 
@@ -31,36 +29,29 @@ namespace GeoComment.Controllers
         [HttpPost]
         [Route("register")]
         
-        public async Task<ActionResult<UserOutput>> Register(UserInput input)
-        {
-            var passwordValidator = new PasswordValidator<User>();
-            var isValid = await passwordValidator.ValidateAsync(_userManager,null,input.Password);
-            if (!isValid.Succeeded)
+        public async Task<ActionResult<UserOutput>> Register(UserInput input) {
+            var isValid = await _userHandler.PasswordValidation(input.Password);
+
+
+            if (!isValid)
             {
                 return BadRequest();
             }
 
-            var user = await _userManager.CreateAsync(new User()
-            {
-                UserName = input.Username,
-                First_name = input.Username
-            }, input.Password);
+            var user = await _userHandler.RegisterUser(input.Username, input.Password);
 
+            
            
-            if (!user.Succeeded)
+            if (user == null)
             {
                 return BadRequest();
             }
 
-          
-            await _ctx.SaveChangesAsync();
-
-            var registeredUser = await _userManager.Users.Where(u => u.UserName == input.Username).FirstOrDefaultAsync();
           
             return Created("", new UserOutput
             {
-                Id= registeredUser.Id,
-                Username = registeredUser.UserName
+                Id= user.Id,
+                Username =  user.UserName
             });
         }
 
@@ -72,26 +63,23 @@ namespace GeoComment.Controllers
         {
 
 
-            var user = await _userManager.FindByNameAsync(input.Username);
+            var loginAttempt = await _userHandler.LoginAttempt(input.Username, input.Password);
 
-            if (user == null)
+            if (loginAttempt == null)
             {
                 return BadRequest();
             }
 
-            var login = await _userManager.CheckPasswordAsync(user, input.Password);
 
-            if (!login)
+            if (loginAttempt == null)
             {
                 return BadRequest();
             }
-
-            var token = _jwtPrinter.Print(user);
 
 
             return Ok(new TokenOutput
             {
-                Token = token,
+                Token = loginAttempt,
             });
         }
     }

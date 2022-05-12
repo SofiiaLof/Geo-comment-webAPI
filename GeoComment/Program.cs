@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<DatabaseHandler>();
 builder.Services.AddScoped<JwtPrinter>();
+builder.Services.AddScoped<UserHandler>();
 builder.Services.AddScoped<GeoCommentHandler>();
 // Add services to the container.
 
