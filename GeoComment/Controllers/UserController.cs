@@ -71,12 +71,6 @@ namespace GeoComment.Controllers
             }
 
 
-            if (loginAttempt == null)
-            {
-                return BadRequest();
-            }
-
-
             return Ok(new TokenOutput
             {
                 Token = loginAttempt,

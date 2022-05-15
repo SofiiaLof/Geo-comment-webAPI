@@ -67,7 +67,7 @@ namespace GeoComment.Services
 
             if (!login)
             {
-                return null;
+                return null ;
             }
 
             var token = _jwtPrinter.Print(user);

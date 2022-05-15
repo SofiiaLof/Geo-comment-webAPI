@@ -25,28 +25,13 @@ namespace GeoComment.Services
 
            if (databaseCreated)
            {
-              // await Seed();
-               
-                return true;
+
+               return true;
              
            }
 
            return false;
         }
-        public async Task Seed()
-        {
-            var user1 = new User
-            {
-                First_name = "Ada",
-                UserName = "Ada",
-                
-            };
-
-            
-             await _userManager.CreateAsync(user1, "Passw0rd1@");
-         
-            
-            await _ctx.SaveChangesAsync();
-        }
+       
     }
 }
